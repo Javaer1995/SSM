@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--
+        对指定的package进行扫描，将使用组件注解的类的对象（本示例是目标对象和切面对象），交给spring的ioc容器来管理
+    -->
+    <context:component-scan base-package="org.rain.spring.aop.xml"></context:component-scan>
+
+    <aop:config>
+
+        <!--
+            aop:pointcut标签：用于声明公共的切入点表达式，效果等同于@Pointcut注解
+                id属性：设置该公共切入点表达式的唯一标识
+                expression属性：设置切入点表达式
+        -->
+        <aop:pointcut id="pointcutOne" expression="execution(* org.rain.spring.aop.xml.CalculatorImpl.*(..))"/>
+
+        <!--
+            aop:aspect标签：将ioc容器中的bean对象设置为切面，效果等同于@Aspect注解
+                ref属性：引用IOC容器中（要设置为切面的）bean的id
+        -->
+        <aop:aspect ref="loggerAspect">
+            <!--
+                aop:before标签：将方法设置为该切面的前置通知（方法），效果等同于@Before注解
+                    method属性：指定（要设置为前置通知的）方法的名称
+                    pointcut属性：设置该前置通知的切入点表达式
+                    pointcut-ref属性：通过id引用对应的公共切入点表达式
+            -->
+            <!--<aop:before method="beforeMethod" pointcut="execution(* org.rain.spring.aop.xml.CalculatorImpl.*(..))"></aop:before>-->
+            <aop:before method="beforeMethod" pointcut-ref="pointcutOne"></aop:before>
+
+            <!--
+                aop:after标签：将方法设置为该切面的后置通知（方法），效果等同于@After注解
+            -->
+            <aop:after method="afterMethod" pointcut-ref="pointcutOne"></aop:after>
+
+            <!--
+                aop:after-returning标签：将方法设置为该切面的返回通知（方法），效果等同于@AfterReturning注解
+                    returning属性：指定返回通知（方法）中的某个参数（名），用于接收目标对象方法的返回值
+            -->
+            <aop:after-returning method="afterReturningMethod" pointcut-ref="pointcutOne" returning="result"></aop:after-returning>
+
+            <!--
+                aop:after-throwing标签：将方法设置为该切面的异常通知（方法），效果等同于@AfterThrowing注解
+                    throwing属性：指定异常通知（方法）中的某个参数（名），用于接收目标对象方法出现的异常
+            -->
+            <aop:after-throwing method="afterThrowingMethod" pointcut-ref="pointcutOne" throwing="ex" ></aop:after-throwing>
+
+            <!--
+                aop:around标签：将方法设置为该切面的环绕通知（方法），效果等同于@Around注解
+            -->
+            <aop:around method="aroundMethod" pointcut-ref="pointcutOne"></aop:around>
+        </aop:aspect>
+
+        <!--
+           aop:aspect标签的order属性：用于设置切面的优先级，value属性值越小，优先级越高，默认值为Integer的最大值
+        -->
+        <aop:aspect ref="validateAspect" order="2023">
+            <aop:before method="beforeMethod" pointcut-ref="pointcutOne"></aop:before>
+        </aop:aspect>
+
+    </aop:config>
+
+</beans>

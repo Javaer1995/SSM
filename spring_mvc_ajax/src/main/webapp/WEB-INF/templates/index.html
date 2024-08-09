@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+<body>
+
+<h1>index.html</h1>
+
+<input type="button" value="测试SpringMVC处理Ajax请求" onclick="testAjax()">
+
+<hr>
+
+<input type="button" value="测试使用@RequestBody注解处理json格式的请求参数" onclick="testRequestBody()">
+
+<hr>
+
+<a th:href="@{/test/ResponseBody}">测试通过@ResponseBody注解响应浏览器数据</a>
+
+<hr>
+
+<input type="button" value="测试使用@ResponseBody注解响应浏览器json格式的数据" onclick="testResponseBody()">
+
+<script type="text/javascript">
+    function testResponseBody() {
+        // 实例化 XMLHttpRequest 对象
+        var xhr = new XMLHttpRequest()
+
+        // 设置请求方式和请求路径
+        // 因为thymeleaf语法只能应用于html的属性，所以在js中的请求要包含上下文信息
+        xhr.open("get","/spring_mvc_ajax/test/ResponseBody/json")
+
+        // 设置请求头
+        // 一般 get 不需要设置，而 post 必须设置请求头
+
+        // 发送请求
+        xhr.send()
+
+        // 设置 XMLHttpRequest 对象状态变化事件的处理函数
+        xhr.onreadystatechange = function () {
+            // readyState的值为4时，表示已获取到服务器的响应
+            if (xhr.readyState == 4){
+                // 在浏览器控制台输出服务器响应的内容
+                // JSON.parse()用来将JSON字符串，解析成字符串描述的JavaScript值或对象
+                console.log(JSON.parse(xhr.responseText))
+            }
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function testRequestBody() {
+        // 实例化 XMLHttpRequest 对象
+        var xhr = new XMLHttpRequest()
+
+        // 设置请求方式和请求路径
+        // 因为thymeleaf语法只能应用于html的属性，所以在js中的请求要包含上下文信息
+        xhr.open("post","/spring_mvc_ajax/test/RequestBody/json")
+
+        // 设置请求头
+        // 一般 get 不需要设置，而 post 必须设置请求头
+        // 必须写在在open（）和send（）之间
+        xhr.setRequestHeader("Content-Type", "application/json")
+
+        // 发送请求
+        // JSON.stringify() 是用来将合法的JSON数据字符串化的
+        xhr.send( JSON.stringify( {"username":"admin","password":"123","age":18,"gender":"男"} ) )
+
+        // 设置 XMLHttpRequest 对象状态变化事件的处理函数
+        xhr.onreadystatechange = function () {
+            // readyState的值为4时，表示已获取到服务器的响应
+            if (xhr.readyState == 4){
+                // 在浏览器控制台输出服务器响应的内容
+                console.log(xhr.responseText)
+            }
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function testAjax() {
+        // 实例化 XMLHttpRequest 对象
+        var xhr = new XMLHttpRequest()
+
+        // 设置请求方式和请求路径
+        // 因为thymeleaf语法只能应用于html的属性，所以在js中的请求要包含上下文信息
+        xhr.open("post","/spring_mvc_ajax/test/ajax?id=1001")
+
+        // 设置请求头
+        // 一般 get 不需要设置，而 post 必须设置请求头
+        // 必须写在在open（）和send（）之间
+        xhr.setRequestHeader("Content-Type", "application/json")
+
+        // 发送请求
+        // JSON.stringify() 是用来将合法的JSON数据字符串化的
+        xhr.send( JSON.stringify( {"username":"admin","password":123} ) )
+
+        // 设置 XMLHttpRequest 对象状态变化事件的处理函数
+        xhr.onreadystatechange = function () {
+            // readyState的值为4时，表示已获取到服务器的响应
+            if (xhr.readyState == 4){
+                // 在浏览器控制台输出服务器响应的内容
+                console.log(xhr.responseText)
+            }
+        }
+    }
+</script>
+
+</body>
+</html>

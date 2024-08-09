@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>员工列表</title>
+</head>
+<body>
+
+<table border="10">
+    <tr>
+        <!--表头合并七列-->
+        <th colspan="7">员工列表</th>
+    </tr>
+    <tr>
+        <th>序号</th>
+        <th>员工id</th>
+        <th>员工姓名</th>
+        <th>员工年龄</th>
+        <th>员工性别</th>
+        <th>员工邮箱</th>
+        <th>操作(<a href="">添加员工</a>)</th>
+    </tr>
+    <!--在thymeleaf语法中，要循环一个标签，只需要在该标签中添加循环属性即可-->
+    <!--循环元素变量（employee）后面那个（status）是thymeleaf提供的循环状态辅助变量-->
+    <tr th:each="employee,status : ${employees}">
+        <!--${status.count}表示循环次数，可以用来作为序号使用-->
+        <td th:text="${status.count}"></td>
+        <td th:text="${employee.empId}"></td>
+        <td th:text="${employee.empName}"></td>
+        <td th:text="${employee.age}"></td>
+        <td th:text="${employee.sex}"></td>
+        <td th:text="${employee.email}"></td>
+        <td>
+            <a href="">修改员工</a>
+            <a href="">删除员工</a>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="userDao" class="org.rain.spring.dao.impl.UserDaoImpl"></bean>
+
+    <bean id="userDaotwo" class="org.rain.spring.dao.impl.UserDaoImpl"></bean>
+
+    <!--
+        autowire属性：指定自动装配的策略，为bean的类类型（或接口类型）的属性自动赋值
+            byName：根据要赋值的属性的名称，匹配ioc容器中的对应id的bean，为属性赋值
+    -->
+    <bean id="userService" class="org.rain.spring.service.impl.UserServiceImpl" autowire="byName"></bean>
+
+    <bean id="userController" class="org.rain.spring.controller.UserController" autowire="byType"></bean>
+
+</beans>

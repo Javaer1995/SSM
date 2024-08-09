@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+<body>
+
+<h1>index.html</h1>
+
+<a th:href="@{/test/down}">下载图片</a>
+
+<hr>
+
+<!--
+    文件上传要求form表单的请求方式必须为post
+    并且设置属性enctype="multipart/form-data"，表示表单中的数据以二进制的方式提交到服务器中
+    enctype属性值默认为application/x-www-form-urlencoded，传输不了文件
+-->
+<form th:action="@{/test/up}" method="post" enctype="multipart/form-data">
+    <!--
+        type属性值为file
+        name属性值要和控制器方法的形参一致
+    -->
+    图片：<input type="file" name="photo">
+    <br>
+    <input type="submit" value="上传图片">
+</form>
+
+</body>
+</html>

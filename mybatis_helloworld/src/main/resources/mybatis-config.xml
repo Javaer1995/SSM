@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE configuration
+                PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <!--引入properties文件，当前文件就可以通过${key}访问对应的value-->
+    <properties resource="jdbc.properties"/>
+
+    <!--
+        typeAliases标签：设置类型的别名，在Mybatis范围中可以使用别名表示实际的类型
+    -->
+    <typeAliases>
+        <!--
+            typeAlias标签：设置某个类型的别名
+            type属性：设置需要别名的类型
+            alias属性：设置类型的别名
+        -->
+        <!--<typeAlias type="org.rain.mybatis.pojo.User" alias="abC"/>-->
+        <!--<typeAlias type="org.rain.mybatis.pojo.User"/>-->
+        <package name="org.rain.mybatis.pojo"/>
+    </typeAliases>
+
+    <!--
+        environments标签：配置连接数据库的环境
+        default属性：设置默认使用的环境的id
+    -->
+    <environments default="development">
+        <!--
+            environment标签：设置某个具体的连接数据库的环境
+            id属性：表示环境的唯一标识，不能重复
+        -->
+        <environment id="development">
+            <!--
+                transactionManager标签：设置事务管理器
+                type属性：设置事务管理方式
+                type="JDBC|MANAGED"
+                    JDBC：表示使用的是JDBC中原生的事务管理方式，事务的提交或回滚需要手动处理，或手动开启自动提交或回滚事务
+                    MANAGED：被管理，例如Spring
+            -->
+            <transactionManager type="JDBC"/>
+            <!--
+                dataSource：配置数据源
+                type属性：设置数据源的类型
+                type="POOLED|UNPOOLED|JNDI"
+                    POOLED：表示使用数据库连接池缓存数据库连接
+                    UNPOOLED：表示不使用数据库连接池
+                    JNDI：表示使用上下文中的数据源，了解即可
+            -->
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+
+        <environment id="test">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/ssm?characterEncoding=utf-8"/>
+                <property name="username" value="root"/>
+                <property name="password" value="root"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!--引入mybatis的映射文件-->
+    <mappers>
+        <!--<mapper resource="mappers/UserMapper.XML"/>-->
+        <!--
+            通过包引入映射文件，必须满足两个条件：
+                1、mapper接口和映射文件所在的包必须一致
+                2、mapper接口的名字和映射文件的名字必须一致
+        -->
+        <package name="org.rain.mybatis.mapper"/>
+    </mappers>
+
+</configuration>

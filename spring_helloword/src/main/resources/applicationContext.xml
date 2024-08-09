@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--
+        bean标签：配置交给Spring的IOC容器管理的对象
+            id属性：设置bean的唯一标识
+            class属性：设置bean所对应类型的全类名
+    -->
+    <bean id="helloWord" class="org.rain.spring.component.HelloWord"></bean>
+
+</beans>

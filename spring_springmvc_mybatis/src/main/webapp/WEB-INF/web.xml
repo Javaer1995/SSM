@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <!--
+        服务器三大组件的初始化执行顺序依次为：listener、filter、servlet；
+
+        springmvc的ioc容器是在servlet初始化时创建；
+
+        springmvc的ioc管理的controller组件，依赖于spring的ioc管理的service组件；
+
+        因此，spring的ioc容器应该在filter或listener初始化时创建；
+
+        这样的话，springmvc的ioc创建controller组件时，便能从提前创建好的spring的ioc容器中找到service组件来完成自动装配；
+
+        Spring提供了一个监听器ContextLoaderListener，实现了ServletContextListener接口，
+        可监听ServletContext的状态，在web服务器启动时，读取Spring的配置文件
+    -->
+
+    <!--配置spring的监听器，在服务器启动时就加载spring配置文件-->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!--ContextLoaderListener监听器要求Spring配置文件的默认位置和名称为：/WEB-INF/applicationContext.xml-->
+    <!--通过上下文（即当前工程）初始化参数指定SpringMVC配置文件的位置和名称-->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:spring.xml</param-value>
+    </context-param>
+
+
+    <!--配置springMVC的编码过滤器（该过滤器须为第一个过滤器）-->
+    <filter>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <!--该初始化参数用于设置请求参数的编码方式-->
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <!--该初始化参数用于设置响应参数也使用同样的编码方式-->
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--配置处理请求方式的过滤器-->
+    <filter>
+        <filter-name>HiddenHttpMethodFilter</filter-name>
+        <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>HiddenHttpMethodFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+    <!--
+        前端控制器DispatcherServlet初始化时，会创建SpringMVC的ioc容器；
+
+        SpringMVC的ioc容器创建成功后，如果能找到已存在的Spring的ioc容器，则将Spring的ioc容器设置为其父容器；
+
+        子容器（SpringMVC的ioc容器）可以访问父容器（Spring的ioc容器）的bean组件，而父容器不能访问子容器的bean组件；
+    -->
+
+    <!--配置SpringMVC的前端控制器DispatcherServlet，对浏览器发送的请求统一进行处理-->
+    <servlet>
+        <servlet-name>SpringMVC</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!--通过初始化参数指定SpringMVC配置文件的位置和名称-->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:springmvc.xml</param-value>
+        </init-param>
+        <!--将DispatcherServlet的初始化时间提前到服务器启动时-->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SpringMVC</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+</web-app>

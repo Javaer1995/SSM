@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+<body>
+<h1>index.html</h1>
+
+<!--浏览器中的/路径表示：http://localhost:8080/，注意是没有上下文路径的-->
+<a href="/hello">测试普通的超链接</a>
+
+<!--经过thymeleaf语法渲染后，会自动补充上下文路径-->
+<a th:href="@{/hello}">测试经过thymeleaf语法渲染后的超链接</a>
+
+</body>
+</html>

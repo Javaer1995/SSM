@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--扫描组件（控制层除外）-->
+    <context:component-scan base-package="online.liaojy.ssm">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!--引入jdbc.properties属性文件-->
+    <context:property-placeholder location="classpath:jdbc.properties"></context:property-placeholder>
+
+    <!--配置数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"></property>
+        <property name="url" value="${jdbc.url}"></property>
+        <property name="username" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+
+    <!--配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--
+            事务管理都是基于connection对象来操作，而connection对象都是由数据源来管理；
+            因此，事务管理器需要配置数据源对象。
+        -->
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!--
+        开启事务的注解驱动（注意该标签有多个，要选命名空间为tx那个）；
+        如果事务管理器的id为transactionManager，则transaction-manager属性不需要显示设置；
+        该标签的作用是：将使用@Transactional注解标识的方法（或标识的类的所有方法）进行事务管理
+    -->
+    <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+
+    <!--配置SqlSessionFactoryBean，用于为ioc容器提供SqlSessionFactory类型的bean组件-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+
+        <!--设置MyBatis核心配置文件的路径（如果MyBatis核心配置都是通过spring来指定，那可以不设置核心配置文件的路径）-->
+        <!--<property name="configLocation" value="classpath:mybatis-config.xml"></property>-->
+
+        <!--设置数据源-->
+        <property name="dataSource" ref="dataSource"></property>
+
+        <!--设置类型别名所对应的包-->
+        <property name="typeAliasesPackage" value="online.liaojy.ssm.pojo"></property>
+
+        <!--设置分页插件-->
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor"></bean>
+            </array>
+        </property>
+
+        <!--设置全局配置-->
+        <property name="configuration">
+            <bean class="org.apache.ibatis.session.Configuration">
+                <!--将下划线映射为驼峰-->
+                <property name="mapUnderscoreToCamelCase" value="true"></property>
+            </bean>
+        </property>
+
+        <!--
+            设置映射文件的路径；
+            当配置了MapperScannerConfigurer的bean之后（见下文），如果mapper映射文件和mapper接口一致，则可以不需要设置；
+            当没配置MapperScannerConfigurer的bean，无论mapper映射文件和mapper接口是否一致，都必须设置映射文件的路径。
+        -->
+        <!--<property name="mapperLocations" value="classpath:mappers/*.xml"></property>-->
+
+    </bean>
+
+
+    <!--
+        配置mapper接口的扫描；
+        可以将指定包下所有的mapper接口，通过（当前SqlSessionFactory提供的）SqlSession来创建对应的代理实现类对象；
+        并将这些mapper接口的代理实现类对象交给ioc容器来管理。
+    -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--
+            value属性既设置了mapper接口所在的包，也设置了mapper映射文件所在的包；
+            如果mapper映射文件和mapper接口所在的包不一致，
+            则需要在配置SqlSessionFactoryBean时（见上文），额外设置映射文件所在的包。
+        -->
+        <property name="basePackage" value="online.liaojy.ssm.mapper"></property>
+    </bean>
+
+</beans>

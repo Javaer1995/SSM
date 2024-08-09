@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>员工列表</title>
+</head>
+<body>
+
+<table border="10">
+    <tr>
+        <!--表头合并七列-->
+        <th colspan="7">员工列表</th>
+    </tr>
+    <tr>
+        <th>序号</th>
+        <th>员工id</th>
+        <th>员工姓名</th>
+        <th>员工年龄</th>
+        <th>员工性别</th>
+        <th>员工邮箱</th>
+        <th>操作(<a href="">添加员工</a>)</th>
+    </tr>
+    <!--在thymeleaf语法中，要循环一个标签，只需要在该标签中添加循环属性即可-->
+    <!--循环元素变量（employee）后面那个（status）是thymeleaf提供的循环状态辅助变量-->
+    <tr th:each="employee,status : ${employeePageInfo.list}">
+        <!--${status.count}表示循环次数，可以用来作为序号使用-->
+        <td th:text="${status.count}"></td>
+        <td th:text="${employee.empId}"></td>
+        <td th:text="${employee.empName}"></td>
+        <td th:text="${employee.age}"></td>
+        <td th:text="${employee.sex}"></td>
+        <td th:text="${employee.email}"></td>
+        <td>
+            <a href="">修改员工</a>
+            <a href="">删除员工</a>
+        </td>
+    </tr>
+</table>
+
+<!--分页导航-->
+<div style="text-align: center;">
+
+    <!--如果存在上一页，则在分页导航中显示“首页”和“上一页”的导航超链接-->
+    <a th:if="${employeePageInfo.hasPreviousPage}" th:href="@{/employee/page/1}">首页</a>
+    <a th:if="${employeePageInfo.hasPreviousPage}" th:href="@{'/employee/page/'+${employeePageInfo.prePage}}">上一页</a>
+
+    <!--根据导航分页的页码数组，显示导航分页的页码-->
+    <span th:each="num : ${employeePageInfo.navigatepageNums}">
+        <!--如果循环的分页导航页码等于当前页码，则该分页导航页码加中括号突出显示，并标红-->
+        <a th:if="${employeePageInfo.pageNum == num}" th:href="@{'/employee/page/'+${num}}" th:text="'['+${num}+']'" style="color: red;"></a>
+        <!--如果循环的分页导航页码不等于当前页码，则该分页导航页码普通显示-->
+        <a th:if="${employeePageInfo.pageNum != num}" th:href="@{'/employee/page/'+${num}}" th:text="${num}"></a>
+    </span>
+
+    <!--如果存在下一页，则在分页导航中显示“下一页”和“末页”的导航超链接-->
+    <a th:if="${employeePageInfo.hasNextPage}" th:href="@{'/employee/page/'+${employeePageInfo.nextPage}}">下一页</a>
+    <a th:if="${employeePageInfo.hasNextPage}" th:href="@{'/employee/page/'+${employeePageInfo.pages}}">末页</a>
+</div>
+
+</body>
+</html>

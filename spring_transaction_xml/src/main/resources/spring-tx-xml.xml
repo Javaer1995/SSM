@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 导入外部属性文件 -->
+    <context:property-placeholder location="jdbc.properties"></context:property-placeholder>
+
+    <!-- 配置数据源 -->
+    <bean id="datasource" class="com.alibaba.druid.pool.DruidDataSource">
+        <!--通过${key}的方式访问外部属性文件的value-->
+        <property name="driverClassName" value="${jdbc.driver}"></property>
+        <property name="url" value="${jdbc.url}"></property>
+        <property name="username" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+
+    <!-- 配置 JdbcTemplate -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <!-- 装配数据源 -->
+        <property name="dataSource" ref="datasource"></property>
+    </bean>
+
+    <!--扫描注解组件-->
+    <context:component-scan base-package="org.rain.spring"></context:component-scan>
+
+    <!--配置事务管理器-->
+    <bean id="dataSourceTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 装配要进行事务管理的数据源 -->
+        <property name="dataSource" ref="datasource"></property>
+    </bean>
+
+    <!--
+        tx:advice标签：配置事务通知
+            id属性：给事务通知标签设置唯一标识，便于引用
+            transaction-manager属性：通过id引用对应的事务管理器
+    -->
+    <tx:advice id="txAdvice" transaction-manager="dataSourceTransactionManager">
+        <tx:attributes>
+
+            <!--
+                tx:method标签：配置使用事务的方法
+                    name属性：指定用事务的方法名，可以使用星号代表多个字符
+            -->
+            <tx:method name="buyBook"/>
+
+            <!-- read-only属性：设置只读属性 -->
+            <!-- rollback-for属性：设置回滚的异常 -->
+            <!-- no-rollback-for属性：设置不回滚的异常 -->
+            <!-- isolation属性：设置事务的隔离级别 -->
+            <!-- timeout属性：设置事务的超时属性 -->
+            <!-- propagation属性：设置事务的传播行为 -->
+            <tx:method name="save*" read-only="false" rollback-for="java.lang.Exception" propagation="REQUIRES_NEW"/>
+            <tx:method name="update*" read-only="false" rollback-for="java.lang.Exception" propagation="REQUIRES_NEW"/>
+            <tx:method name="delete*" read-only="false" rollback-for="java.lang.Exception" propagation="REQUIRES_NEW"/>
+
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+        <!--
+            通过切入点表达式，将事务通知作用到连接点
+        -->
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.rain.spring.service.impl.*.*(..))"></aop:advisor>
+    </aop:config>
+
+</beans>

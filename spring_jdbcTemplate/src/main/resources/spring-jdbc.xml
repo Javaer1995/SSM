@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 导入外部属性文件 -->
+    <context:property-placeholder location="jdbc.properties"></context:property-placeholder>
+
+    <!-- 配置数据源 -->
+    <bean id="datasource" class="com.alibaba.druid.pool.DruidDataSource">
+        <!--通过${key}的方式访问外部属性文件的value-->
+        <property name="driverClassName" value="${jdbc.driver}"></property>
+        <property name="url" value="${jdbc.url}"></property>
+        <property name="username" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+
+    <!-- 配置 JdbcTemplate -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <!-- 装配数据源 -->
+        <property name="dataSource" ref="oradatasource"></property>
+    </bean>
+
+    <bean id="oradatasource" class="com.alibaba.druid.pool.DruidDataSource">
+        <!--通过${key}的方式访问外部属性文件的value-->
+        <property name="driverClassName" value="oracle.jdbc.OracleDriver"></property>
+        <property name="url" value="jdbc:oracle:thin:@192.168.56.106:1521/XEPDB1"></property>
+        <property name="username" value="SZSFJ"></property>
+        <property name="password" value="SZSFJ"></property>
+    </bean>
+
+</beans>
